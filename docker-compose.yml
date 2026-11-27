@@ -1,0 +1,24 @@
+services:
+  web:
+    build: .
+    ports:
+      - "8000:5000"
+    environment:
+      MONGO_URI: mongodb://mongo:27017/fishing_game
+      FLASK_SECRET_KEY: ${FLASK_SECRET_KEY:-local-development-key-change-me}
+    depends_on:
+      mongo:
+        condition: service_healthy
+
+  mongo:
+    image: mongo:7
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  mongo-data:

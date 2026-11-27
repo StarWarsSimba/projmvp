@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Odds & Tides</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="{{ url_for('static', filename='app.js') }}" defer></script>
+  </head>
+  <body>
+    <main class="page-shell">
+      <header class="topbar">
+        <a class="brand" href="/">Odds <span>&</span> Tides</a>
+        <p class="tagline">Cast far. Catch the unexpected.</p>
+        <div class="wallet" aria-label="Your score">
+          <div><span class="wallet-label">POINTS</span><strong id="points">0</strong></div>
+          <div><span class="wallet-label">COINS</span><strong id="coins">0</strong></div>
+        </div>
+      </header>
+
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">THE CROSS-GAME FISHING DERBY</p>
+          <h1>Something’s<br>on the line.</h1>
+          <p>Time your cast to reach the distant waters. When something bites, type its name to reel it in.</p>
+        </div>
+        <div class="water-art" aria-hidden="true">
+          <span class="sun"></span><span class="wave wave-one"></span><span class="wave wave-two"></span>
+          <span class="float">✦</span>
+        </div>
+      </section>
+
+      <div id="notice" class="notice" role="status" aria-live="polite" hidden></div>
+
+      <section class="game-grid">
+        <section class="panel casting-panel" aria-labelledby="casting-title">
+          <div class="panel-heading">
+            <div><p class="eyebrow">01 / CAST</p><h2 id="casting-title">Aim for the horizon</h2></div>
+            <span class="distance-readout"><strong id="distance-value">0</strong><small>m</small></span>
+          </div>
+          <p class="muted">Start the meter, then stop it as high as you can. Farther casts reach rarer catches.</p>
+          <div class="meter-wrap">
+            <div class="meter-track" aria-hidden="true">
+              <span class="meter-zone"></span><span id="meter-marker" class="meter-marker"></span>
+            </div>
+            <div class="meter-labels"><span>SHALLOWS</span><span>DEEP WATER</span></div>
+          </div>
+          <button id="cast-button" class="button button-primary" type="button">Start casting</button>
+          <div id="catch-area" class="catch-area" hidden>
+            <div class="catch-banner">
+              <span class="bite-dot"></span>
+              <div><p class="eyebrow">IT BIT!</p><strong id="catch-name"></strong><span id="catch-rarity" class="rarity"></span></div>
+            </div>
+            <form id="catch-form">
+              <label for="catch-guess">Type the catch’s name to reel it in</label>
+              <div class="input-row">
+                <input id="catch-guess" name="guess" autocomplete="off" required>
+                <button class="button button-dark" type="submit">Reel in</button>
+              </div>
+            </form>
+          </div>
+        </section>
+
+        <section class="panel upgrades-panel" aria-labelledby="upgrades-title">
+          <p class="eyebrow">02 / PREPARE</p>
+          <h2 id="upgrades-title">Good things take practice</h2>
+          <p class="muted">Trade coins for in-game luck boosts. Sell catches from your collection to earn more.</p>
+          <div id="upgrades" class="upgrade-list"></div>
+        </section>
+      </section>
+
+      <section class="panel collection-panel" aria-labelledby="collection-title">
+        <div class="panel-heading">
+          <div><p class="eyebrow">03 / YOUR HAUL</p><h2 id="collection-title">The collection</h2></div>
+          <span id="collection-count" class="collection-count">0 catches</span>
+        </div>
+        <div id="collection" class="collection-grid"></div>
+      </section>
+
+      <footer><span>Odds & Tides</span><span>All perks are in-game mechanics. Happy fishing.</span></footer>
+    </main>
+  </body>
+</html>
