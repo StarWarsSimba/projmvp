@@ -28,6 +28,19 @@ Time the cast to reach farther
 
 To catch something, type it out
 
+TODO:
+- Don't require typing out the entire thing
+- Maybe make it so only certain items require you to type them out
+- Add images of things you can catch
+- Maybe make it so that instead of typing, you have to press enough keys in a time window, with better items requiring more presses
+- Show what is purchased
+
+IDEAS:
+- Achievements
+    - Examples: catch a legendary item without any buffs, hold 50 unique items at once
+- Add slight pause before catching something after casting
+- Add animation of casting and of getting an item
+
 ## Run the playable MVP
 
 The app uses Flask for the REST API and page, MongoDB for player progress, and

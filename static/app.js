@@ -2,9 +2,15 @@ const castButton = document.querySelector("#cast-button");
 const meterMarker = document.querySelector("#meter-marker");
 const distanceValue = document.querySelector("#distance-value");
 const catchArea = document.querySelector("#catch-area");
-const catchForm = document.querySelector("#catch-form");
-const catchGuess = document.querySelector("#catch-guess");
+const catchReveal = document.querySelector("#catch-reveal");
+const catchImage = document.querySelector("#catch-image");
+const reelControls = document.querySelector("#catch-form");
 const notice = document.querySelector("#notice");
+const reelProgress = document.querySelector("#reel-progress");
+const reelTarget = document.querySelector("#reel-target");
+const reelScore = document.querySelector("#reel-score");
+const reelTime = document.querySelector("#reel-time");
+const reelKey = document.querySelector("#reel-key");
 
 let items = [];
 let player = null;
@@ -14,6 +20,15 @@ let animationFrame = null;
 let casting = false;
 let pendingItem = null;
 let lastFrame = 0;
+let reelActive = false;
+let reelAnimation = null;
+let reelStart = 0;
+let reelValue = 0;
+let reelLastKey = 0;
+let reelThreshold = 40;
+let reelFinishing = false;
+let reelLastFrame = 0;
+const CATCH_REVEAL_DURATION = 2000;
 
 async function requestJson(path, options = {}) {
   const response = await fetch(path, {
@@ -88,7 +103,10 @@ function renderCollection() {
     name.textContent = item.name;
     const stats = document.createElement("p");
     stats.textContent = `${count} owned · ${item.points} pts · ${item.sell_value} coins each`;
-    details.append(rarity, name, stats);
+    const description = document.createElement("p");
+    description.className = "collection-description";
+    description.textContent = item.description || "No description available.";
+    details.append(rarity, name, description, stats);
 
     const sell = document.createElement("button");
     sell.className = "button button-small button-outline";
@@ -143,15 +161,7 @@ async function cast() {
       method: "POST",
       body: JSON.stringify({ distance }),
     });
-    pendingItem = result.item;
-    document.querySelector("#catch-name").textContent = pendingItem.name;
-    const rarity = document.querySelector("#catch-rarity");
-    rarity.textContent = pendingItem.rarity;
-    rarity.className = `rarity rarity-${pendingItem.rarity.toLowerCase()}`;
-    catchArea.hidden = false;
-    catchGuess.value = "";
-    catchGuess.focus();
-    showNotice(`Your cast reached ${distance}m. Type the catch’s name to reel it in.`);
+    showPendingCatch(result.item, `Your cast reached ${distance}m. Reel the catch in before it escapes.`);
   } catch (error) {
     showNotice(error.message, true);
   } finally {
@@ -161,27 +171,128 @@ async function cast() {
   }
 }
 
-async function reelIn(event) {
-  event.preventDefault();
-  if (!pendingItem) return;
-  const submitButton = catchForm.querySelector("button");
-  submitButton.disabled = true;
+function showPendingCatch(item, message) {
+  pendingItem = item;
+  document.querySelector("#catch-name").textContent = item.name;
+  const rarity = document.querySelector("#catch-rarity");
+  rarity.textContent = item.rarity;
+  rarity.className = `rarity rarity-${item.rarity.toLowerCase()}`;
+  catchArea.hidden = false;
+  showNotice(message);
+  startReel(item.rarity);
+}
+
+async function reelIn(success) {
+  if (!pendingItem || reelFinishing) return;
+  reelFinishing = true;
+  reelActive = false;
+  cancelAnimationFrame(reelAnimation);
+  reelKey.disabled = true;
+  const caughtItem = pendingItem;
+  const score = success ? reelValue : 0;
   try {
     const result = await requestJson("/api/catch", {
       method: "POST",
-      body: JSON.stringify({ item_id: pendingItem.id, guess: catchGuess.value }),
+      body: JSON.stringify({ item_id: caughtItem.id, reel_score: score }),
     });
+    if (success) {
+      reelControls.hidden = true;
+      catchImage.hidden = !caughtItem.image;
+      catchImage.src = caughtItem.image || "";
+      catchImage.alt = caughtItem.image ? caughtItem.name : "";
+      document.querySelector("#catch-description").textContent =
+        caughtItem.description || "No description available.";
+      catchReveal.hidden = false;
+      castButton.disabled = true;
+      showNotice(`${result.caught.name} caught!`);
+      await new Promise((resolve) => setTimeout(resolve, CATCH_REVEAL_DURATION));
+    }
     player = result.player;
     showNotice(`${result.caught.name} added to your collection · +${result.caught.points} points.`);
     catchArea.hidden = true;
+    catchReveal.hidden = true;
+    reelControls.hidden = false;
+    catchImage.removeAttribute("src");
     pendingItem = null;
     renderPlayer();
   } catch (error) {
     showNotice(error.message, true);
     catchArea.hidden = true;
+    catchReveal.hidden = true;
+    reelControls.hidden = false;
+    catchImage.removeAttribute("src");
     pendingItem = null;
   } finally {
-    submitButton.disabled = false;
+    castButton.disabled = false;
+    reelKey.disabled = false;
+    reelFinishing = false;
+  }
+}
+
+function startReel(rarity) {
+  reelActive = true;
+  reelFinishing = false;
+  reelValue = 8;
+  reelLastKey = 0;
+  reelThreshold = { Common: 40, Rare: 50, Epic: 60, Legendary: 70 }[rarity] || 40;
+  reelTarget.style.right = `${100 - reelThreshold}%`;
+  reelStart = performance.now();
+  reelLastFrame = reelStart;
+  reelKey.disabled = false;
+  reelKey.classList.remove("is-pressed");
+  updateReelDisplay(reelValue, 8);
+  reelAnimation = requestAnimationFrame(animateReel);
+  reelKey.focus();
+}
+
+function updateReelDisplay(value, timeLeft) {
+  reelValue = Math.max(0, Math.min(100, value));
+  reelProgress.style.width = `${reelValue}%`;
+  reelScore.textContent = `${Math.round(reelValue)}%`;
+  reelTime.textContent = `${Math.max(0, timeLeft).toFixed(1)}s`;
+}
+
+function animateReel(timestamp) {
+  if (!reelActive) return;
+  const elapsed = (timestamp - reelStart) / 1000;
+  const timeLeft = 8 - elapsed;
+  const frameElapsed = Math.min(timestamp - reelLastFrame, 100);
+  reelLastFrame = timestamp;
+  reelValue = Math.max(0, reelValue - frameElapsed * 0.0028);
+  updateReelDisplay(reelValue, timeLeft);
+  if (timeLeft <= 0) {
+    reelIn(false);
+    return;
+  }
+  reelAnimation = requestAnimationFrame(animateReel);
+}
+
+function pressReelKey() {
+  if (!reelActive || reelFinishing) return;
+  const now = performance.now();
+  let gain = 2;
+  if (reelLastKey) {
+    const interval = now - reelLastKey;
+    if (interval < 180) gain = 7;
+    else if (interval < 350) gain = 5;
+    else if (interval < 600) gain = 3;
+  } else {
+    gain = 5;
+  }
+  reelLastKey = now;
+  reelValue = Math.min(100, reelValue + gain);
+  updateReelDisplay(reelValue, 8 - (now - reelStart) / 1000);
+  reelKey.classList.add("is-pressed");
+  setTimeout(() => reelKey.classList.remove("is-pressed"), 70);
+  if (reelValue >= reelThreshold) reelIn(true);
+}
+
+function handleReelKey(event) {
+  if (!reelActive) return;
+  if (event.repeat) return;
+  if (event.code === "Space" || event.code === "Enter" || event.code === "ArrowLeft" || event.code === "ArrowRight") {
+    event.preventDefault();
+    pressReelKey();
   }
 }
 
@@ -222,6 +333,9 @@ async function startGame() {
     items = itemResult.items;
     player = stateResult.player;
     renderPlayer();
+    if (stateResult.pending_item) {
+      showPendingCatch(stateResult.pending_item, "A catch is still on your line. Reel it in before casting again.");
+    }
   } catch (error) {
     showNotice(`${error.message} Check that the app and database are running.`, true);
     castButton.disabled = true;
@@ -229,5 +343,9 @@ async function startGame() {
 }
 
 castButton.addEventListener("click", cast);
-catchForm.addEventListener("submit", reelIn);
+reelKey.addEventListener("pointerdown", (event) => {
+  event.preventDefault();
+  pressReelKey();
+});
+window.addEventListener("keydown", handleReelKey);
 startGame();

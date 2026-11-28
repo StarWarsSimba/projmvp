@@ -22,18 +22,19 @@ items_collection = database.items
 players_collection = database.players
 
 ITEMS = [
-    {"id": "dart_monkey", "name": "BTD6 0-0-0 Dart Monkey", "rarity": "Common", "points": 5, "sell_value": 3, "weight": 50, "min_distance": 0},
-    {"id": "triple_spike", "name": "Geometry Dash Triple Spike", "rarity": "Common", "points": 6, "sell_value": 3, "weight": 38, "min_distance": 0},
-    {"id": "wave", "name": "Geometry Dash Wave", "rarity": "Rare", "points": 15, "sell_value": 8, "weight": 20, "min_distance": 15},
-    {"id": "sniper_monkey", "name": "BTD6 4-2-0 Sniper Monkey", "rarity": "Rare", "points": 18, "sell_value": 9, "weight": 16, "min_distance": 25},
-    {"id": "mirror_portal", "name": "Geometry Dash Mirror Portal", "rarity": "Rare", "points": 20, "sell_value": 10, "weight": 13, "min_distance": 35},
-    {"id": "cube_459", "name": "Cube 459", "rarity": "Epic", "points": 40, "sell_value": 20, "weight": 9, "min_distance": 45},
-    {"id": "super_monkey", "name": "BTD6 0-0-5 Super Monkey", "rarity": "Epic", "points": 50, "sell_value": 24, "weight": 7, "min_distance": 55},
-    {"id": "fortified_ddt", "name": "BTD6 Fortified DDT", "rarity": "Epic", "points": 55, "sell_value": 26, "weight": 6, "min_distance": 60},
-    {"id": "bloodbath", "name": "Geometry Dash Bloodbath", "rarity": "Epic", "points": 60, "sell_value": 28, "weight": 5, "min_distance": 65},
-    {"id": "frame_perfect", "name": "Geometry Dash 60hz frame perfect", "rarity": "Legendary", "points": 100, "sell_value": 50, "weight": 4, "min_distance": 75},
-    {"id": "mythic_level", "name": "Geometry Dash Mythic Level", "rarity": "Legendary", "points": 120, "sell_value": 60, "weight": 3, "min_distance": 82},
-    {"id": "elite_bloonarius", "name": "BTD6 Elite Bloonarius", "rarity": "Legendary", "points": 150, "sell_value": 75, "weight": 2, "min_distance": 90},
+    {"id": "dart_monkey", "name": "0-0-0 Dart Monkey", "description": "A dart monkey with no upgrades.", "rarity": "Common", "points": 5, "sell_value": 3, "weight": 50, "min_distance": 0},
+    {"id": "triple_spike", "name": "Triple Spike", "description": "An iconic obstacle. \"Every level must have a triple spike.\" - Michigun", "rarity": "Rare", "points": 6, "sell_value": 3, "weight": 38, "min_distance": 0, "image": "/static/images/triple_spike.png"},
+    {"id": "wave", "name": "Wave Gamemode", "description": "A gamemode that travels along angled straight lines.", "rarity": "Common", "points": 5, "sell_value": 8, "weight": 20, "min_distance": 15},
+    {"id": "sniper_monkey", "name": "4-2-0 Sniper Monkey", "description": "A sniper monkey that can deal high damage and see camo bloons.", "rarity": "Rare", "points": 18, "sell_value": 9, "weight": 16, "min_distance": 25},
+    {"id": "mirror_portal", "name": "Mirror Portal", "description": "A portal that flips the gameplay. It's almost never used in modern levels.", "rarity": "Rare", "points": 10, "sell_value": 10, "weight": 13, "min_distance": 35},
+    {"id": "cube_459", "name": "Cube 459", "description": "A cube unlocked by beating 500 Demon levels. Chances are that players using this cube are either into bunnies or want to flex their achievement.", "rarity": "Epic", "points": 40, "sell_value": 20, "weight": 9, "min_distance": 45, "image": "/static/images/cube_459.png"},
+    {"id": "super_monkey", "name": "0-0-5 Super Monkey", "description": "A super monkey that can knock back bloons it hits, can teleport across the map, and deal extra damage to MOAB-class bloons.", "rarity": "Epic", "points": 50, "sell_value": 24, "weight": 7, "min_distance": 55},
+    {"id": "fortified_ddt", "name": "Fortified DDT", "description": "A MOAB-class bloon that has camo and black bloon properties and is also tougher than normal.", "rarity": "Epic", "points": 55, "sell_value": 26, "weight": 6, "min_distance": 60},
+    {"id": "bloodbath", "name": "Bloodbath", "description": "The most downloaded level in Geometry Dash and arguably the most iconic Extreme Demon.", "rarity": "Epic", "points": 60, "sell_value": 28, "weight": 5, "min_distance": 65, "image": "/static/images/Bloodbath.png"},
+    {"id": "frame_perfect", "name": "60hz frame perfect", "description": "A tight timing window on a 60hz screen.", "rarity": "Legendary", "points": 100, "sell_value": 50, "weight": 4, "min_distance": 75},
+    {"id": "mythic_level", "name": "Mythic Level", "description": "A level with a blue flame around the difficulty to indicate its quality.", "rarity": "Legendary", "points": 120, "sell_value": 60, "weight": 3, "min_distance": 82},
+    {"id": "elite_bloonarius", "name": "Elite Bloonarius", "description": "The elite version of the first boss bloon in BTD6.", "rarity": "Legendary", "points": 150, "sell_value": 75, "weight": 2, "min_distance": 90},
+    {"id": "acheron_first_jump", "name": "Acheron First Jump", "description": "The first jump of the Extreme Demon Acheron..", "rarity": "Legendary", "points": 140, "sell_value": 70, "weight": 2, "min_distance": 86, "image": "/static/images/acheron_first_jump.png"}
 ]
 
 UPGRADES = {
@@ -55,7 +56,8 @@ RARITY_LUCK = {"Common": 0, "Rare": 1, "Epic": 1.5, "Legendary": 2}
 
 
 def public_item(item):
-    return {key: item[key] for key in ("id", "name", "rarity", "points", "sell_value", "min_distance")}
+    keys = ("id", "name", "description", "rarity", "points", "sell_value", "min_distance", "image")
+    return {key: item[key] for key in keys if key in item}
 
 
 def current_player_id():
@@ -119,13 +121,20 @@ def list_items():
 
 @app.get("/api/state")
 def get_state():
-    return jsonify({"player": player_state(get_player())})
+    pending_id = session.get("pending_catch")
+    pending_item = next((item for item in ITEMS if item["id"] == pending_id), None)
+    if pending_id and pending_item is None:
+        session.pop("pending_catch", None)
+    return jsonify({
+        "player": player_state(get_player()),
+        "pending_item": public_item(pending_item) if pending_item else None,
+    })
 
 
 @app.post("/api/cast")
 def cast():
     if session.get("pending_catch"):
-        return json_error("Type out your current catch before casting again.", 409)
+        return json_error("Reel in your current catch before casting again.", 409)
 
     data = request.get_json(silent=True) or {}
     distance = data.get("distance")
@@ -160,10 +169,17 @@ def catch_item():
         return json_error("That catch is no longer available. Cast again.", 409)
 
     item_id = data.get("item_id")
-    guess = data.get("guess")
+    reel_score = data.get("reel_score")
     session.pop("pending_catch", None)
-    if item_id != item["id"] or not isinstance(guess, str) or guess.strip().casefold() != item["name"].casefold():
-        return json_error("Not quite — it got away. Cast again and try another catch.", 422)
+    thresholds = {"Common": 40, "Rare": 50, "Epic": 60, "Legendary": 70}
+    if (
+        item_id != item["id"]
+        or isinstance(reel_score, bool)
+        or not isinstance(reel_score, (int, float))
+        or not 0 <= reel_score <= 100
+        or reel_score < thresholds[item["rarity"]]
+    ):
+        return json_error("Not fast enough — it got away. Cast again and try another catch.", 422)
 
     player_id = current_player_id()
     player = players_collection.find_one_and_update(

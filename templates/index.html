@@ -11,7 +11,7 @@
     <main class="page-shell">
       <header class="topbar">
         <a class="brand" href="/">Odds <span>&</span> Tides</a>
-        <p class="tagline">Cast far. Catch the unexpected.</p>
+        <p class="tagline">Cast far. Reel fast. Catch the unexpected.</p>
         <div class="wallet" aria-label="Your score">
           <div><span class="wallet-label">POINTS</span><strong id="points">0</strong></div>
           <div><span class="wallet-label">COINS</span><strong id="coins">0</strong></div>
@@ -22,7 +22,7 @@
         <div class="hero-copy">
           <p class="eyebrow">THE CROSS-GAME FISHING DERBY</p>
           <h1>Something’s<br>on the line.</h1>
-          <p>Time your cast to reach the distant waters. When something bites, type its name to reel it in.</p>
+          <p>Time your cast to reach the distant waters. When something bites, press keys rapidly to reel it in.</p>
         </div>
         <div class="water-art" aria-hidden="true">
           <span class="sun"></span><span class="wave wave-one"></span><span class="wave wave-two"></span>
@@ -51,13 +51,26 @@
               <span class="bite-dot"></span>
               <div><p class="eyebrow">IT BIT!</p><strong id="catch-name"></strong><span id="catch-rarity" class="rarity"></span></div>
             </div>
-            <form id="catch-form">
-              <label for="catch-guess">Type the catch’s name to reel it in</label>
-              <div class="input-row">
-                <input id="catch-guess" name="guess" autocomplete="off" required>
-                <button class="button button-dark" type="submit">Reel in</button>
+            <div id="catch-reveal" class="catch-reveal" hidden>
+              <img id="catch-image" class="catch-image" alt="">
+              <div class="catch-description">
+                <p class="eyebrow">DESCRIPTION</p>
+                <p id="catch-description"></p>
               </div>
-            </form>
+              <p id="catch-reveal-message">Adding to your collection…</p>
+            </div>
+            <div id="catch-form" class="reel-controls">
+              <label id="reel-label">Press keys rapidly to reel it in</label>
+              <div class="reel-track" aria-label="Reeling progress">
+                <span id="reel-progress" class="reel-progress"></span>
+                <span id="reel-target" class="reel-target"></span>
+              </div>
+              <div class="reel-status">
+                <strong id="reel-score">0%</strong>
+                <span id="reel-time">8.0s</span>
+              </div>
+              <button id="reel-key" class="button button-dark reel-key" type="button">Press Space / ← / →</button>
+            </div>
           </div>
         </section>
 
